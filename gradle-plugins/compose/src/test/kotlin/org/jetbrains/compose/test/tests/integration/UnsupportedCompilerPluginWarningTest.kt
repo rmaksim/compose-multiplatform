@@ -17,7 +17,7 @@ class UnsupportedCompilerPluginWarningTest : GradlePluginTestBase() {
     ) {
         testProject(
             TestProjects.customCompilerUnsupportedPlatformsWarning, defaultTestEnvironment.copy(
-                kotlinVersion = "1.8.22",
+                kotlinVersion = "1.9.0",
                 composeCompilerPlugin = "\"$androidxComposeCompilerPlugin\"",
             )
         ).apply {
