@@ -27,6 +27,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import java.io.File
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class GradlePluginTest : GradlePluginTestBase() {
 
@@ -137,9 +140,24 @@ class GradlePluginTest : GradlePluginTestBase() {
 
         jsCanvasEnabled(true)
         gradle(":build").checks {
-            check.taskSuccessful(":unpackSkikoWasmRuntimeJs")
+            check.taskSuccessful(":unpackSkikoWasmRuntime")
             check.taskSuccessful(":compileKotlinJs")
+            check.taskSuccessful(":compileKotlinWasmJs")
+            check.taskSuccessful(":wasmJsBrowserDistribution")
+
+            file("./build/dist/wasmJs/productionExecutable").apply {
+                checkExists()
+                assertTrue(isDirectory)
+                val distributionFiles = listFiles()!!.map { it.name }.toList()
+                assertFalse(
+                    distributionFiles.contains("skiko.wasm"),
+                    "skiko.wasm is probably a duplicate"
+                )
+                // one file is the app wasm file and another one is skiko wasm file with a mangled name
+                assertEquals(2, distributionFiles.filter { it.endsWith(".wasm") }.size)
+            }
         }
+
     }
 
     @Test
